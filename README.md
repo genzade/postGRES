@@ -206,3 +206,40 @@ Use this command to execute that file content.
 ```sql
 \i /path/to/file.sql;
 ```
+
+## Selecting from table
+
+```sql
+SELECT * FROM table;                                 -- select everything
+SELECT col_a, col_b FROM table_name;                 -- select particular columns
+SELECT * FROM table ORDER BY col_a ASC;              -- order by column (ascending)
+SELECT * FROM table ORDER BY col_a DESC;             -- order by column (descending)
+SELECT * FROM table ORDER BY col_a, col_b DESC;      -- order by multiple column (descending)
+SELECT DISTINCT col_a FROM table ORDER BY col_a ASC; -- select distinct values
+```
+
+### Using cluases
+
+```sql
+SELECT *
+    FROM table
+    WHERE col_a = 'some_value'; -- select everything matching criteria
+
+-- multiple criteria with `AND`
+SELECT *
+    FROM table
+    WHERE col_a = 'some_value'  -- select everything matching criteria
+    AND col_b = 'other_value';  -- and other column value
+
+-- multiple criteria with `OR`
+SELECT *
+    FROM table
+    WHERE col_a = 'some_value'  -- select everything matching criteria
+    AND (
+        col_b = 'other_value'
+        OR
+        col_b = 'another_value' -- or this column value
+    );
+```
+
+### Comparison operators
