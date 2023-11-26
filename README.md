@@ -369,3 +369,53 @@ SELECT *
     BETWEEN '2000-01-01' AND '2020-01-01'
 ```
 
+### Like and iLike
+
+#### wildcard '%'
+
+```sql
+-- LIKE
+SELECT *
+    FROM person
+    WHERE email LIKE '%.org'; -- anything that ends with '.org'
+-- +-----+------------+------------+--------+---------------+----------------+------------------+
+-- | id  | first_name | last_name  | gender | date_of_birth | email          | country_of_birth |
+-- |-----+------------+------------+--------+---------------+----------------+------------------|
+-- | 5   | Arley      | Naish      | MALE   | 2023-10-13    | anh4@rdss.org  | Portugal         |
+-- | 79  | Abigael    | Blakesley  | FEMALE | 2023-04-17    | aby26@npr.org  | China            |
+-- | 98  | Brock      | Axby       | MALE   | 2022-11-25    | yp@arhve.org   | Australia        |
+-- | 111 | Daveta     | Bachelar   | FEMALE | 2023-07-17    | hela@pb.org    | Albania          |
+-- | 120 | Malinde    | Stacey     | FEMALE | 2023-02-17    | syj@p.org      | Greece           |
+-- | 123 | Lynn       | Brolechan  | FEMALE | 2023-08-29    | le@macin.org   | Japan            |
+-- | 151 | Beryle     | Darbishire | FEMALE | 2023-05-26    | ire1e@pal.org  | China            |
+-- +-----+------------+------------+--------+---------------+----------------+------------------+
+
+SELECT * FROM person WHERE email LIKE '%google%'; -- use wildcard anywhere
+-- +-----+------------+-----------+--------+---------------+-----------------+------------------+
+-- | id  | first_name | last_name | gender | date_of_birth | email           | country_of_birth |
+-- |-----+------------+-----------+--------+---------------+-----------------+------------------|
+-- | 99  | Cynthy     | Kruger    | FEMALE | 2022-12-27    | ck2q@google.com | China            |
+-- | 163 | Bendite    | Fowell    | FEMALE | 2023-08-18    | bf1q@google.com | China            |
+-- | 191 | Vaughan    | Heasman   | MALE   | 2023-08-29    | vhn2i@google.ca | China            |
+-- +-----+------------+-----------+--------+---------------+-----------------+------------------+
+```
+
+#### wildcard '\_'
+
+The \_ character looks for a presence of (any) one single character.
+
+```sql
+SELECT *
+    FROM person
+    WHERE email LIKE '_______.org'; -- will return rows where email has 7 chars before '.org'
+```
+
+#### iLike (case insensitive)
+
+```sql
+-- ILIKE
+SELECT *
+    FROM person
+    WHERE country_of_birth ILIKE 'i%'; -- will return rows where country_of_birth begins with i
+```
+
