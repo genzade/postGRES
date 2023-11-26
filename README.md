@@ -462,3 +462,18 @@ SELECT country_of_birth, count(*)
 -- +------------------+-------+
 ```
 
+## Adding new table
+
+See the [car sql file](./sql/car.sql).
+
+```sql
+\i /path/to/file.sql;
+
+-- CREATE TABLE car (
+--   id BIGSERIAL NOT NULL PRIMARY KEY,
+--   make VARCHAR(100) NOT NULL,
+--   model VARCHAR(100) NOT NULL,
+--   price NUMERIC(19, 2) NOT NULL
+-- );
+```
+
