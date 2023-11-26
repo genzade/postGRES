@@ -477,3 +477,76 @@ See the [car sql file](./sql/car.sql).
 -- );
 ```
 
+## Calculations
+
+### Max
+
+```sql
+SELECT MAX(price) FROM car;
+-- +----------+
+-- | max      |
+-- |----------|
+-- | 99049.99 |
+-- +----------+
+
+-- select maximum price for each car make
+SELECT make, model, MAX(price)
+    FROM car
+    GROUP BY make, model;
+```
+
+### Min
+
+```sql
+SELECT MIN(price) FROM car;
+-- +----------+
+-- | min      |
+-- |----------|
+-- | 10470.60 |
+-- +----------+
+
+-- select minimum price for each car make
+SELECT make, model, MIN(price)
+    FROM car
+    GROUP BY make, model;
+```
+
+### Avg
+
+```sql
+SELECT AVG(price) FROM car;
+-- +--------------------+
+-- | avg                |
+-- |--------------------|
+-- | 57763.456700000000 |
+-- +--------------------+
+
+-- round the result
+SELECT ROUND(AVG(price)) FROM car;
+-- +-------+
+-- | round |
+-- |-------|
+-- | 57763 |
+-- +-------+
+
+-- select minimum price for each car make
+SELECT make, ROUND(AVG(price))
+    FROM car
+    GROUP BY make;
+```
+
+### Sum
+
+```sql
+-- sum total price for all cars
+SELECT SUM(price) FROM car;
+-- +------------+
+-- | sum        |
+-- |------------|
+-- | 5776345.67 |
+-- +------------+
+
+-- sum total by car make
+SELECT make, SUM(price) FROM car GROUP BY make;
+```
+
