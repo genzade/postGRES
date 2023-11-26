@@ -847,3 +847,32 @@ SELECT (NOW() - INTERVAL '10 years')::DATE;  -- 10 years ago
 -- | 2013-11-26 |
 -- +------------+
 ```
+
+### Extracting fields
+
+```sql
+
+-- just for reference for below table
+SELECT NOw()::DATE;
+-- +------------+
+-- | now        |
+-- |------------|
+-- | 2023-11-26 |
+-- +------------+
+
+SELECT
+    EXTRACT(YEAR FROM NOW()) AS year,
+    EXTRACT(MONTH FROM NOW()) AS month,
+    EXTRACT(DAY FROM NOW()) AS day,
+    EXTRACT(DOW FROM NOW()) AS day_of_week,
+    EXTRACT(HOUR FROM NOW()) AS hour,
+    EXTRACT(MINUTE FROM NOW()) AS minute,
+    EXTRACT(SECOND FROM NOW()) AS second,
+    EXTRACT(MICROSECOND FROM NOW()) AS microsecond,
+    EXTRACT(WEEK FROM NOW()) AS week;
+-- +------+-------+-----+-------------+------+--------+-----------+-------------+------+
+-- | year | month | day | day_of_week | hour | minute | second    | microsecond | week |
+-- |------+-------+-----+-------------+------+--------+-----------+-------------+------|
+-- | 2023 | 11    | 26  | 0           | 22   | 24     | 35.083122 | 35083122    | 47   |
+-- +------+-------+-----+-------------+------+--------+-----------+-------------+------+
+```
