@@ -309,3 +309,63 @@ SELECT 1 <> 2;
 -- +----------+
 ```
 
+### Limit, offset and fetch
+
+```sql
+-- LIMIT
+SELECT * FROM person LIMIT 5;
+
+-- +----+------------+-----------+--------+---------------+------------------+------------------+
+-- | id | first_name | last_name | gender | date_of_birth | email            | country_of_birth |
+-- |----+------------+-----------+--------+---------------+------------------+------------------|
+-- | 1  | Eadmund    | Dorsey    | MALE   | 2022-12-12    | <null>           | China            |
+-- | 2  | Benjamen   | Garnson   | MALE   | 2023-03-18    | bgn1@deviart.com | Slovenia         |
+-- | 3  | Sven       | Philipsen | MALE   | 2023-11-18    | spn2@jiahis.com  | Norway           |
+-- | 4  | Mordy      | Albasini  | MALE   | 2023-09-25    | mi3@bc.co.uk     | Belarus          |
+-- | 5  | Arley      | Naish     | MALE   | 2023-10-13    | ash4@recross.org | Portugal         |
+-- +----+------------+-----------+--------+---------------+------------------+------------------+
+
+-- OFFSET
+SELECT * FROM person OFFSET 5 LIMIT 5;
+
+-- +----+------------+-----------+--------+---------------+------------------+------------------+
+-- | id | first_name | last_name | gender | date_of_birth | email            | country_of_birth |
+-- |----+------------+-----------+--------+---------------+------------------+------------------|
+-- | 6  | Kim        | Enriques  | FEMALE | 2023-06-17    | keues5@tmall.com | Australia        |
+-- | 7  | Amaleta    | Jamot     | FEMALE | 2023-09-02    | ajot6@huains.com | Jamaica          |
+-- | 8  | Geoffrey   | Heasly    | MALE   | 2023-11-14    | ghesly7@est.com  | Guatemala        |
+-- | 9  | Stavros    | Mapston   | MALE   | 2023-03-10    | saon8@st.tx.us   | Egypt            |
+-- | 10 | Hebert     | Duckwith  | MALE   | 2023-02-27    | hith9@pla.or.jp  | Indonesia        |
+-- +----+------------+-----------+--------+---------------+------------------+------------------+
+
+-- FETCH
+SELECT * FROM person OFFSET 5 FETCH FIRST 5 ROWS ONLY;
+
+-- +----+------------+-----------+--------+---------------+------------------+------------------+
+-- | id | first_name | last_name | gender | date_of_birth | email            | country_of_birth |
+-- |----+------------+-----------+--------+---------------+------------------+------------------|
+-- | 6  | Kim        | Enriques  | FEMALE | 2023-06-17    | keues5@tmall.com | Australia        |
+-- | 7  | Amaleta    | Jamot     | FEMALE | 2023-09-02    | ajot6@huains.com | Jamaica          |
+-- | 8  | Geoffrey   | Heasly    | MALE   | 2023-11-14    | ghesly7@est.com  | Guatemala        |
+-- | 9  | Stavros    | Mapston   | MALE   | 2023-03-10    | saon8@st.tx.us   | Egypt            |
+-- | 10 | Hebert     | Duckwith  | MALE   | 2023-02-27    | hith9@pla.or.jp  | Indonesia        |
+-- +----+------------+-----------+--------+---------------+------------------+------------------+
+```
+
+### In
+
+```sql
+SELECT *
+    FROM table_name
+    WHERE column IN ('value_1', 'value_2', 'value_3');
+```
+
+### Between
+
+```sql
+SELECT *
+    FROM table_name
+    WHERE date_column
+    BETWEEN '2000-01-01' AND '2020-01-01'
+```
+
