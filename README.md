@@ -603,3 +603,125 @@ SELECT 10 % 3;
 -- +----------+
 ```
 
+### Round
+
+Lets say there was a promotion and we wanted to display the price of all cars as well as their discounted price...
+
+```sql
+SELECT
+    make,
+    model,
+    price AS original_price,                           -- alias original_price
+    ROUND(price * 0.9, 2) AS discounted_price,         -- alias discounted_price
+    ROUND((price - price * 0.9), 2) AS discount_amount -- alias discounted_price
+FROM car
+ORDER BY make;
+```
+
+### Coalesce
+
+You can hanle `NULL` values
+
+```sql
+-- will return the very first value that is present
+SELECT COALESCE(1) AS number;
+-- +--------+
+-- | number |
+-- |--------|
+-- | 1      |
+-- +--------+
+SELECT COALESCE(NULL, 1) AS number;
+-- +--------+
+-- | number |
+-- |--------|
+-- | 1      |
+-- +--------+
+SELECT COALESCE(NULL, NULL, 1) AS number;
+-- +--------+
+-- | number |
+-- |--------|
+-- | 1      |
+-- +--------+
+SELECT COALESCE(NULL, NULL, 1, 10) AS number;
+-- +--------+
+-- | number |
+-- |--------|
+-- | 1      |
+-- +--------+
+
+SELECT
+    first_name,
+    last_name,
+    COALESCE(email, 'EMAIL NOT PROVIDED') AS email
+FROM person;
+-- +-------------+-----------------+-----------------------------------+
+-- | first_name  | last_name       | email                             |
+-- |-------------+-----------------+-----------------------------------|
+-- | Eadmund     | Dorsey          | EMAIL NOT PROVIDED                |
+-- | Benjamen    | Garnson         | bgarnson1@deviantart.com          |
+-- | Sven        | Philipsen       | sphilipsen2@jiathis.com           |
+-- | Geoffrey    | Heasly          | gheasly7@pinterest.com            |
+-- | Stavros     | Mapston         | smapston8@state.tx.us             |
+-- | Eolanda     | Kassman         | ekassmanb@furl.net                |
+-- | Iolanthe    | Avramovsky      | EMAIL NOT PROVIDED                |
+-- | Siana       | Woods           | EMAIL NOT PROVIDED                |
+-- | Marina      | Crampton        | mcramptonc@bizjournals.com        |
+-- | Domenico    | Kemston         | dkemstond@reference.com           |
+-- | Putnam      | Pirot           | ppirote@goo.gl                    |
+-- | Stern       | Oldacres        | EMAIL NOT PROVIDED                |
+-- ...
+```
+
+### NULLIF
+
+Handle division by zero...
+
+```sql
+-- NULLIF takes 2 args and return the first arg if provided args are not matching
+SELECT 10 / 0;
+-- ERROR: division by zero
+
+SELECT NULLIF(10, 10);
+-- +--------+
+-- | nullif |
+-- |--------|
+-- | <null> |
+-- +--------+
+SELECT NULLIF(10, 1);
+-- +--------+
+-- | nullif |
+-- |--------|
+-- | 10     |
+-- +--------+
+SELECT NULLIF(10, 19);
+-- +--------+
+-- | nullif |
+-- |--------|
+-- | 10     |
+-- +--------+
+SELECT NULLIF(100, 1000);
+-- +--------+
+-- | nullif |
+-- |--------|
+-- | 100    |
+-- +--------+
+SELECT 10 / NULLIF(5, 0);
+-- +----------+
+-- | ?column? |
+-- |----------|
+-- | 2        |
+-- +----------+
+SELECT 10 / COALESCE(NULLIF(0, 0));
+-- +----------+
+-- | ?column? |
+-- |----------|
+-- | <null>   |
+-- +----------+
+SELECT COALESCE(10 / NULLIF(0, 0), 0);
+-- +----------+
+-- | coalesce |
+-- |----------|
+-- | 0        |
+-- +----------+
+```
+
