@@ -419,3 +419,46 @@ SELECT *
     WHERE country_of_birth ILIKE 'i%'; -- will return rows where country_of_birth begins with i
 ```
 
+### Group by
+
+Lets say you wanted to find out how many people you have in from each country in the database...
+
+```sql
+SELECT country_of_birth, count(*)
+    FROM person
+    GROUP BY country_of_birth
+    ORDER BY country_of_birth;
+
+-- +-----------------------+-------+
+-- | country_of_birth      | count |
+-- |-----------------------+-------|
+-- | Afghanistan           | 2     |
+-- | Albania               | 2     |
+-- | Argentina             | 2     |
+-- | Armenia               | 1     |
+-- | Australia             | 1     |
+-- | Azerbaijan            | 1     |
+-- ...
+```
+
+#### Having
+
+Perform extra filtering after aggregation. e.g. find all countries that have at least 5 people...
+
+```sql
+SELECT country_of_birth, count(*)
+    FROM person
+    GROUP BY country_of_birth
+    HAVING COUNT(*) > 5
+    ORDER BY country_of_birth;
+
+-- +------------------+-------+
+-- | country_of_birth | count |
+-- |------------------+-------|
+-- | China            | 41    |
+-- | France           | 6     |
+-- | Indonesia        | 23    |
+-- | Portugal         | 12    |
+-- +------------------+-------+
+```
+
