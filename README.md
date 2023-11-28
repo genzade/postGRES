@@ -1076,3 +1076,19 @@ VALUES ('Sammy', 'Albasini', 'sini3@bbc.co.uk', 'MALE', '2023/09/25', 'Belarus')
 
 `Primary ensures` unique rows and `Unique constraint` ensures unique values in column.
 
+## Check constraint
+
+```sql
+
+ALTER TABLE
+    person
+ADD CONSTRAINT gender_constraint CHECK (gender = 'MALE' OR gender = 'FEMALE');
+
+-- now gender can only be 'MALE' OR gender = 'FEMALE'
+
+INSERT INTO
+    person (first_name, last_name, email, gender, date_of_birth, country_of_birth)
+VALUES ('Sammy', 'sini', 'sini3@bbc.co.uk', 'helloooooooo', '2023/09/25', 'Belarus');
+-- check constraint "gender_constraint" of relation "person" is violated by some row
+```
+
