@@ -1125,3 +1125,43 @@ SELECT COUNT(*) FROM person WHERE gender = 'MALE' AND country_of_birth = 'Peru';
 -- +-------+
 ```
 
+## Update records
+
+```sql
+SELECT * FROM person WHERE id = 1;
+-- +----+------------+-----------+--------+---------------+--------+------------------+
+-- | id | first_name | last_name | gender | date_of_birth | email  | country_of_birth |
+-- |----+------------+-----------+--------+---------------+--------+------------------|
+-- | 1  | EAdmund    | Dorsey    | MALE   | 2022-12-12    | <null> | China            |
+-- +----+------------+-----------+--------+---------------+--------+------------------+
+
+-- add an email to this guy
+UPDATE person SET email = 'edorsey@mail.com' WHERE id = 1;
+
+SELECT id, email FROM person WHERE id = 1;
+-- +----+------------------+
+-- | id | email            |
+-- |----+------------------|
+-- | 1  | edorsey@mail.com |
+-- +----+------------------+
+
+-- you can update
+UPDATE person SET first_name = 'Ed', last_name = 'Dorsy' WHERE id = 1;
+
+SELECT id, first_name, last_name FROM person WHERE id = 1;
+-- +----+------------+-----------+
+-- | id | first*name | last*name |
+-- |----+------------+-----------|
+-- | 1  | Ed         | Dorsy     |
+-- +----+------------+-----------+
+```
+
+### Note about updating
+
+Make sure you specify a 'WHERE' clause as omitting it would update the entire table.
+
+```sql
+UPDATE person SET email = 'edorsey@mail.com' WHERE id = 1; -- only updates EAdmund
+
+UPDATE person SET email = 'edorsey@mail.com';              -- updates all rows
+```
