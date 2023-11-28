@@ -984,3 +984,95 @@ Now we can add the primary key constraint...
 ALTER TABLE person ADD PRIMARY KEY (id);
 ```
 
+## Unique constraints
+
+```sql
+SELECT email, COUNT(*) FROM person GROUP BY email;
+-- +-----------------------------------+-------+
+-- | email                             | count |
+-- |-----------------------------------+-------|
+-- | telcox15@phoca.cz                 | 1     |
+-- | sstoeck1p@amazon.co.uk            | 1     |
+-- | <null>                            | 53    |
+-- | etrundler1q@homestead.com         | 1     |
+-- | cgranleesey@aboutads.info         | 1     |
+-- | tpovele10@wsj.com                 | 1     |
+-- ...
+
+-- check for duplicate emails
+SELECT email, COUNT(*) FROM person GROUP BY email HAVING COUNT(*) > 1;
+-- +--------+-------+
+-- | email  | count |
+-- |--------+-------|
+-- | <null> | 53    |
+-- +--------+-------+
+```
+
+Lets add another record...
+
+```sql
+INSERT INTO
+    person (first_name, last_name, email, gender, date_of_birth, country_of_birth)
+VALUES ('Sammy', 'Albasini', 'sini3@bbc.co.uk', 'MALE', '2023/09/25', 'Belarus');
+
+-- now we have a duplicate
+
+SELECT email, COUNT(*) FROM person GROUP BY email HAVING COUNT(*) > 1;
+-- +----------------------+-------+
+-- | email                | count |
+-- |----------------------+-------|
+-- | <null>               | 53    |
+-- | sini3@bbc.co.uk | 2     |
+-- +----------------------+-------+
+
+SELECT * FROM person WHERE email = 'sini3@bbc.co.uk';
+-- +-----+------------+-----------+--------+---------------+-----------------+------------------+
+-- | id  | first_name | last_name | gender | date_of_birth | email           | country_of_birth |
+-- |-----+------------+-----------+--------+---------------+-----------------+------------------|
+-- | 4   | Mordy      | Albasini  | MALE   | 2023-09-25    | sini3@bbc.co.uk | Belarus          |
+-- | 201 | Sammy      | Albasini  | MALE   | 2023-09-25    | sini3@bbc.co.uk | Belarus          |
+-- +-----+------------+-----------+--------+---------------+-----------------+------------------+
+```
+
+Lets add the unique constraint...
+
+```sql
+--- add unique email constraint to person table
+ALTER TABLE person ADD CONSTRAINT unique_email_address UNIQUE (email);
+-- could not create unique index "unique_email_address"
+-- DETAIL:  Key (email)=(sini3@bbc.co.uk) is duplicated.
+
+-- another way of adding constraint
+ALTER TABLE person ADD UNIQUE (email); -- this way postgres adds the name of the constraint
+```
+
+Lets fix that
+
+```sql
+DELETE FROM person WHERE id = 201;
+
+SELECT * FROM person WHERE email = 'sini3@bbc.co.uk';
+-- +----+------------+-----------+--------+---------------+-------+------------------+
+-- | id | first_name | last_name | gender | date_of_birth | email | country_of_birth |
+-- |----+------------+-----------+--------+---------------+-------+------------------|
+-- +----+------------+-----------+--------+---------------+-------+------------------+
+ALTER TABLE person ADD CONSTRAINT unique_email_address UNIQUE (email);
+
+\d person
+-- ...
+-- Indexes:
+--     "person_pkey" PRIMARY KEY, btree (id)
+--     "unique_email_address" UNIQUE CONSTRAINT, btree (email)
+
+-- now we can not add that record again
+INSERT INTO
+    person (first_name, last_name, email, gender, date_of_birth, country_of_birth)
+VALUES ('Sammy', 'Albasini', 'sini3@bbc.co.uk', 'MALE', '2023/09/25', 'Belarus');
+-- duplicate key value violates unique constraint "unique_email_address"
+-- DETAIL:  Key (email)=(sini3@bbc.co.uk) already exists.
+```
+
+## Primary key vs Unique constraint
+
+`Primary ensures` unique rows and `Unique constraint` ensures unique values in column.
+
