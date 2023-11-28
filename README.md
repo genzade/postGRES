@@ -904,3 +904,83 @@ FROM person LIMIT 10;;
 -- +------------+-----------+--------+---------------+--------------------------+
 ```
 
+## Primary key
+
+```sql
+INSERT INTO
+  person (id, first_name, last_name, email, gender, date_of_birth, country_of_birth)
+VALUES (1, 'EAdmund', 'Dorsey', NULL, 'MALE', '2022/12/12', 'China');
+
+-- duplicate key value violates unique constraint "person_pkey"
+-- DETAIL:  Key (id)=(1) already exists.
+```
+
+### Alter table
+
+```sql
+-- remove the primary key constraint
+ALTER TABLE person
+    DROP CONSTRAINT person_pkey;
+
+-- now the insert statement from before should work
+INSERT INTO
+   person (id, first_name, last_name, email, gender, date_of_birth, country_of_birth)
+ VALUES (1, 'EAdmund', 'Dorsey', NULL, 'MALE', '2022/12/12', 'China');
+
+--- INSERT 0 1
+
+SELECT * FROM person WHERE id = 1;
+-- +----+------------+-----------+--------+---------------+--------+------------------+
+-- | id | first_name | last_name | gender | date_of_birth | email  | country_of_birth |
+-- |----+------------+-----------+--------+---------------+--------+------------------|
+-- | 1  | Eadmund    | Dorsey    | MALE   | 2022-12-12    | <null> | China            |
+-- | 1  | EAdmund    | Dorsey    | MALE   | 2022-12-12    | <null> | China            |
+-- +----+------------+-----------+--------+---------------+--------+------------------+
+```
+
+This should show the importance of primary key contraints as without it we can not distinguish between the 2 records returned.
+
+### Adding primary key
+
+```sql
+ --- add back the primary key
+ALTER TABLE person ADD PRIMARY KEY (id);
+-- could not create unique index "person_pkey"
+-- DETAIL:  Key (id)=(1) is duplicated.
+```
+
+We have to delete those records before adding back the constraint.
+
+```sql
+DELETE FROM person WHERE id = 1;
+
+SELECT * FROM person WHERE id = 1;
+-- +----+------------+-----------+--------+---------------+-------+------------------+
+-- | id | first_name | last_name | gender | date_of_birth | email | country_of_birth |
+-- |----+------------+-----------+--------+---------------+-------+------------------|
+-- +----+------------+-----------+--------+---------------+-------+------------------+
+```
+
+Now that person can be added back...
+
+```sql
+INSERT INTO
+   person (id, first_name, last_name, email, gender, date_of_birth, country_of_birth)
+VALUES (1, 'EAdmund', 'Dorsey', NULL, 'MALE', '2022/12/12', 'China');
+
+-- INSERT 0 1
+
+SELECT * FROM person WHERE id = 1;
+-- +----+------------+-----------+--------+---------------+--------+------------------+
+-- | id | first_name | last_name | gender | date_of_birth | email  | country_of_birth |
+-- |----+------------+-----------+--------+---------------+--------+------------------|
+-- | 1  | EAdmund    | Dorsey    | MALE   | 2022-12-12    | <null> | China            |
+-- +----+------------+-----------+--------+---------------+--------+------------------+
+```
+
+Now we can add the primary key constraint...
+
+```sql
+ALTER TABLE person ADD PRIMARY KEY (id);
+```
+
