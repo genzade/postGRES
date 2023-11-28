@@ -1092,3 +1092,36 @@ VALUES ('Sammy', 'sini', 'sini3@bbc.co.uk', 'helloooooooo', '2023/09/25', 'Belar
 -- check constraint "gender_constraint" of relation "person" is violated by some row
 ```
 
+## Delete records
+
+```sql
+-- delete everyone
+DELETE FROM person;
+
+-- delete person with id 42
+DELETE FROM person WHERE id = 42;
+
+SELECT * FROM person WHERE id = 42;
+-- +----+------------+-----------+--------+---------------+-------+------------------+
+-- | id | first_name | last_name | gender | date_of_birth | email | country_of_birth |
+-- |----+------------+-----------+--------+---------------+-------+------------------|
+-- +----+------------+-----------+--------+---------------+-------+------------------+
+
+-- can use multiple conditions in where clause
+
+SELECT COUNT(*) FROM person WHERE gender = 'MALE' AND country_of_birth = 'Peru';
+-- +-------+
+-- | count |
+-- |-------|
+-- | 2     |
+-- +-------+
+DELETE FROM person WHERE gender = 'MALE' AND country_of_birth = 'Peru';
+
+SELECT COUNT(*) FROM person WHERE gender = 'MALE' AND country_of_birth = 'Peru';
+-- +-------+
+-- | count |
+-- |-------|
+-- | 0     |
+-- +-------+
+```
+
