@@ -1165,3 +1165,39 @@ UPDATE person SET email = 'edorsey@mail.com' WHERE id = 1; -- only updates EAdmu
 
 UPDATE person SET email = 'edorsey@mail.com';              -- updates all rows
 ```
+
+## On conflict, do nothing
+
+Lets handle things like exceptions or `duplicate key errors`.
+
+```sql
+SELECT * FROM person WHERE id = 31;
+-- +----+------------+-----------+--------+---------------+-----------------+------------------+
+-- | id | first_name | last_name | gender | date_of_birth | email           | country_of_birth |
+-- |----+------------+-----------+--------+---------------+-----------------+------------------|
+-- | 31 | Marietta   | Nadin     | MALE   | 2023-05-23    | mnadinu@psu.edu | China            |
+-- +----+------------+-----------+--------+---------------+-----------------+------------------+
+
+INSERT INTO
+    person (first_name, last_name, email, gender, date_of_birth, country_of_birth)
+VALUES ('Marietta', 'Nadin', 'mnadinu@psu.edu', 'MALE', '2023/05/23', 'China');
+-- duplicate key value violates unique constraint "unique_email_address"
+-- DETAIL:  Key (email)=(mnadinu@psu.edu) already exists.
+
+-- we can handle exceptions with `ON CNFLICT`
+INSERT INTO
+    person (id, first_name, last_name, email, gender, date_of_birth, country_of_birth)
+VALUES (31, 'Marietta', 'Nadin', 'mnadinu@psu.edu', 'MALE', '2023/05/23', 'China')
+ON CONFLICT (id) DO NOTHING;
+
+-- INSERT 0 0                               -- Note no inserts
+-- Time: 0.009sN CONFLICT (id) DO NOTHING;
+
+-- ensure that ON CONFLICT takes a column that has a constraint
+INSERT INTO
+    person (id, first_name, last_name, email, gender, date_of_birth, country_of_birth)
+VALUES (31, 'Marietta', 'Nadin', 'mnadinu@psu.edu', 'MALE', '2023/05/23', 'China')
+ON CONFLICT (first_name) DO NOTHING;
+
+-- there is no unique or exclusion constraint matching the ON CONFLICT specification
+```
