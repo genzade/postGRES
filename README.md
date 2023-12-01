@@ -1201,3 +1201,32 @@ ON CONFLICT (first_name) DO NOTHING;
 
 -- there is no unique or exclusion constraint matching the ON CONFLICT specification
 ```
+
+## Upsert
+
+Imagine 2 inserts happen consecutively but the user changes, for example, the email.
+We can assume the latest submitted email is the correct one...
+
+```sql
+ SELECT * FROM person WHERE id = 15;
+-- +----+------------+-----------+--------+---------------+----------------+------------------+
+-- | id | first_name | last_name | gender | date_of_birth | email          | country_of_birth |
+-- |----+------------+-----------+--------+---------------+----------------+------------------|
+-- | 15 | Putnam     | Pirot     | MALE   | 2023-06-04    | ppirote@goo.gl | Indonesia        |
+-- +----+------------+-----------+--------+---------------+----------------+------------------+
+
+INSERT INTO
+    person (id, first_name, last_name, email, gender, date_of_birth, country_of_birth)
+VALUES (15, 'Putnam', 'Pirot', 'pp@goo.gl', 'MALE', '2023/06/04', 'Indonesia');
+ON CONFLICT (id) DO UPDATE SET email = EXCLUDED.email;
+-- INSERT 0 1
+-- Time: 0.021s
+
+SELECT * FROM person WHERE id = 15;
+-- +----+------------+-----------+--------+---------------+-----------+------------------+
+-- | id | first_name | last_name | gender | date_of_birth | email     | country_of_birth |
+-- |----+------------+-----------+--------+---------------+-----------+------------------|
+-- | 15 | Putnam     | Pirot     | MALE   | 2023-06-04    | pp@goo.gl | Indonesia        |
+-- +----+------------+-----------+--------+---------------+-----------+------------------+
+```
+
