@@ -1390,3 +1390,19 @@ LEFT JOIN car ON person.car_id = car.id;
 -- +------------+------------+----------+----------+
 ```
 
+## Deleting records with foreingn keys
+
+```sql
+DELETE FROM car WHERE id = 2;
+-- update or delete on table "car" violates foreign key constraint ,,,
+-- DETAIL:  Key (id)=(2) is still referenced from table "person".
+```
+
+To achieve this you could first `DELETE` the `person` the car belongs to...
+
+```sql
+DELETE FROM person WHERE car_id = 2;
+-- then
+DELETE FROM car WHERE id = 2;
+```
+
