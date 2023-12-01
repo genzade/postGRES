@@ -1230,3 +1230,130 @@ SELECT * FROM person WHERE id = 15;
 -- +----+------------+-----------+--------+---------------+-----------+------------------+
 ```
 
+## Foreign keys, joins and relationships
+
+A foreign key in one table references a primary key in another table. This is a relationship.
+
+We currently have two tables; `person` and `car` and we want to establish a relationship
+between them as follows;
+
+- A `person` has one `car` (can only have one car)
+- A car `can` only belong to one `person`
+
+### Adding relationships between tables
+
+If we were to rewrite the `person` and `car` tables with respect to the reltionship described above...
+
+```sql
+CREATE TABLE car (
+    id BIGSERIAL NOT NULL PRIMARY KEY,
+    make VARCHAR(100) NOT NULL,
+    model VARCHAR(100) NOT NULL,
+    price NUMERIC(19, 2) NOT NULL
+);
+
+CREATE TABLE person (
+    id BIGSERIAL NOT NULL PRIMARY KEY,
+    first_name VARCHAR(50) NOT NULL,
+    last_name VARCHAR(50) NOT NULL,
+    gender VARCHAR(7) NOT NULL,
+    email VARCHAR(100),
+    dob DATE NOT NULL,
+    country VARCHAR(50) NOT NULL,
+    car_id BIGINT REFERENCES car (id),
+    UNIQUE (car_id)
+);
+```
+
+See [person-car.sql file](./sql/person-car.sql).
+
+```sql
+DROP TABLE person;
+-- You're about to run a destructive command.
+-- Do you want to proceed? [y/N]: y
+-- Your call!
+-- DROP TABLE
+-- Time: 0.030s
+
+DROP TABLE car;
+-- You're about to run a destructive command.
+-- Do you want to proceed? [y/N]: y
+-- Your call!
+-- DROP TABLE
+-- Time: 0.014s
+
+\i sql/person-car.sql
+-- CREATE TABLE
+-- CREATE TABLE
+-- INSERT 0 1
+-- INSERT 0 1
+-- INSERT 0 1
+-- INSERT 0 1
+-- INSERT 0 1
+-- Time: 0.055s
+
+SELECT * FROM person;
+-- +----+------------+-----------+--------+----------------+------------+---------+--------+
+-- | id | first_name | last_name | gender | email          | dob        | country | car_id |
+-- |----+------------+-----------+--------+----------------+------------+---------+--------|
+-- | 1  | Fernanda   | Beardon   | Female | nandab@is.gd   | 1953-10-28 | Comoros | <null> |
+-- | 2  | Omar       | Colmore   | Male   | <null>         | 1921-04-03 | Finland | <null> |
+-- | 3  | John       | Matuschek | Male   | jon@fdbrnr.com | 1965-02-28 | England | <null> |
+-- +----+------------+-----------+--------+----------------+------------+---------+--------+
+-- SELECT 3
+-- Time: 0.017s
+
+SELECT * FROM car;
+-- +----+------------+----------+----------+
+-- | id | make       | model    | price    |
+-- |----+------------+----------+----------|
+-- | 1  | Land Rover | Sterling | 87665.38 |
+-- | 2  | GMC        | Acadia   | 17662.69 |
+-- +----+------------+----------+----------+
+-- SELECT 2
+```
+
+### Updating foreign keys columns
+
+Lets assign two cars to two people...
+
+```sql
+UPDATE person
+SET car_id = 2 -- GMC
+WHERE id = 1;  -- Fernanda
+-- UPDATE 1
+-- Time: 0.035s
+
+-- see the unique constraint work
+UPDATE person
+SET car_id = 2 -- GMC
+WHERE id = 2;  -- Omar
+-- duplicate key value violates unique constraint "person_car_id_key"
+-- DETAIL:  Key (car_id)=(2) already exists.
+
+UPDATE person
+SET car_id = 1 -- GMC
+WHERE id = 2;  -- Omar
+-- UPDATE 1
+-- Time: 0.021s
+
+SELECT * FROM person;
+
+-- +----+------------+-----------+--------+----------------+------------+---------+--------+
+-- | id | first_name | last_name | gender | email          | dob        | country | car_id |
+-- |----+------------+-----------+--------+----------------+------------+---------+--------|
+-- | 3  | John       | Matuschek | Male   | jon@fdbrnr.com | 1965-02-28 | England | <null> |
+-- | 1  | Fernanda   | Beardon   | Female | nandab@is.gd   | 1953-10-28 | Comoros | 2      |
+-- | 2  | Omar       | Colmore   | Male   | <null>         | 1921-04-03 | Finland | 1      |
+-- +----+------------+-----------+--------+----------------+------------+---------+--------+
+
+SELECT * FROM car;
+-- +----+------------+----------+----------+
+-- | id | make       | model    | price    |
+-- |----+------------+----------+----------|
+-- | 1  | Land Rover | Sterling | 87665.38 |
+-- | 2  | GMC        | Acadia   | 17662.69 |
+-- +----+------------+----------+----------+
+-- SELECT 2
+```
+
