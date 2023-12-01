@@ -1567,3 +1567,140 @@ ALTER SEQUENCE person_id_seq RESTART WITH 8;
 -- Time: 0.004s
 ```
 
+## Extensions
+
+Check all the available postgres extensions with the following...
+
+```sql
+SELECT * FROM pg_available_extension_versions;
+```
+
+### Understanding UUID data types
+
+We are going to install the [`Universally Unique Identitifiers`](https://en.wikipedia.org/wiki/Universally_unique_identifier) (UUID) extension.
+
+```sql
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+-- CREATE EXTENSION
+
+-- a list of all available functions
+\df;
+-- +--------+--------------------+------------------+---------------------------+--------+
+-- | Schema | Name               | Result data type | Argument data types       | Type   |
+-- |--------+--------------------+------------------+---------------------------+--------|
+-- | public | uuid_generate_v1   | uuid             |                           | normal |
+-- | public | uuid_generate_v1mc | uuid             |                           | normal |
+-- | public | uuid_generate_v3   | uuid             | namespace uuid, name text | normal |
+-- | public | uuid_generate_v4   | uuid             |                           | normal |
+-- | public | uuid_generate_v5   | uuid             | namespace uuid, name text | normal |
+-- | public | uuid_nil           | uuid             |                           | normal |
+-- | public | uuid_ns_dns        | uuid             |                           | normal |
+-- | public | uuid_ns_oid        | uuid             |                           | normal |
+-- | public | uuid_ns_url        | uuid             |                           | normal |
+-- | public | uuid_ns_x500       | uuid             |                           | normal |
+-- +--------+--------------------+------------------+---------------------------+--------+
+-- SELECT 10
+-- Time: 0.093s
+
+-- generate a UUID v4 (random)
+SELECT uuid_generate_v4();
+-- +--------------------------------------+
+-- | uuid_generate_v4                     |
+-- |--------------------------------------|
+-- | 25edf5be-74b0-4ad0-9630-3d9fd9fb7db3 | -- <-- will be unique every time function is invoked
+-- +--------------------------------------+
+-- SELECT 1
+-- Time: 0.098s
+```
+
+### UUID as primary keys
+
+We will modify our sql file slightly...
+
+```sql
+CREATE TABLE car (
+    car_uid UUID NOT NULL PRIMARY KEY,
+    make VARCHAR(100) NOT NULL,
+    model VARCHAR(100) NOT NULL,
+    price NUMERIC(19, 2) NOT NULL CHECK (price > 0)
+);
+
+CREATE TABLE person (
+    person_uid UUID NOT NULL PRIMARY KEY,
+    first_name VARCHAR(50) NOT NULL,
+    last_name VARCHAR(50) NOT NULL,
+    gender VARCHAR(7) NOT NULL,
+    email VARCHAR(100),
+    dob DATE NOT NULL,
+    country VARCHAR(50) NOT NULL,
+    car_uid UUID REFERENCES car (car_uid),
+    UNIQUE (car_uid),
+    UNIQUE (email)
+);
+
+-- ... see ./sql/person-car-uuid.sql
+
+-- CREATE TABLE
+-- CREATE TABLE
+-- INSERT 0 1
+-- INSERT 0 1
+-- INSERT 0 1
+-- INSERT 0 1
+-- INSERT 0 1
+-- Time: 0.062s
+
+SELECT person_uid, first_name, last_name FROM person;
+-- +--------------------------------------+------------+-----------+
+-- | person_uid                           | first_name | last_name |
+-- |--------------------------------------+------------+-----------|
+-- | b90135d4-48fd-4d04-8936-17c7a9503115 | Fernanda   | Beardon   |
+-- | 83eda910-462e-4590-a63e-b4953ae1358d | Omar       | Colmore   |
+-- | 64db451a-f54e-4b46-8565-12baf3854026 | John       | Matuschek |
+-- +--------------------------------------+------------+-----------+
+-- SELECT 3
+
+SELECT * FROM car;
+-- +--------------------------------------+------------+----------+----------+
+-- | car_uid                              | make       | model    | price    |
+-- |--------------------------------------+------------+----------+----------|
+-- | 057d20f1-fc69-4d22-8362-0524dace063e | Land Rover | Sterling | 87665.38 |
+-- | b8daa521-ddb0-4461-950a-7c76efd46247 | GMC        | Acadia   | 17662.69 |
+-- +--------------------------------------+------------+----------+----------+
+-- SELECT 2
+-- Time: 0.017s
+
+-- lets assign some cars
+UPDATE person
+SET car_uid = '057d20f1-fc69-4d22-8362-0524dace063e'
+WHERE person_uid = 'b90135d4-48fd-4d04-8936-17c7a9503115';
+-- UPDATE 1
+
+UPDATE person
+SET car_uid = 'b8daa521-ddb0-4461-950a-7c76efd46247'
+WHERE person_uid = '64db451a-f54e-4b46-8565-12baf3854026';
+-- UPDATE 1
+
+SELECT person_uid, car_uid FROM person;
+-- +--------------------------------------+--------------------------------------+
+-- | person_uid                           | car_uid                              |
+-- |--------------------------------------+--------------------------------------|
+-- | 83eda910-462e-4590-a63e-b4953ae1358d | <null>                               |
+-- | b90135d4-48fd-4d04-8936-17c7a9503115 | 057d20f1-fc69-4d22-8362-0524dace063e |
+-- | 64db451a-f54e-4b46-8565-12baf3854026 | b8daa521-ddb0-4461-950a-7c76efd46247 |
+-- +--------------------------------------+--------------------------------------+
+```
+
+To query this now like so...
+
+```sql
+SELECT *
+FROM person
+JOIN car ON person.car_uid = car.car_uid;
+
+-- since both tables have a column named car_uid, the query can be simplified to:
+SELECT * FROM person JOIN car USING (car_uid);
+
+-- example with LEFT JOIN as well
+
+SELECT * FROM person LEFT JOIN car USING (car_uid);
+```
