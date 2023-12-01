@@ -1416,3 +1416,154 @@ DELETE FROM car WHERE id = 2;
  ) TO '/path/to/file.csv' CSV HEADER; -- include headers
 ```
 
+## Serial and sequences
+
+`BIGSERIAL` is a special data type that auto increments a number (`integer`).
+
+```sql
+\d person;
+-- +------------+------------------------+------------------------------------------------------+
+-- | Column     | Type                   | Modifiers                                            |
+-- |------------+------------------------+------------------------------------------------------|
+-- | id         | bigint                 |  not null default nextval('person_id_seq'::regclass) |
+-- | first_name | character varying(50)  |  not null                                            |
+-- | last_name  | character varying(50)  |  not null                                            |
+-- | gender     | character varying(7)   |  not null                                            |
+-- | email      | character varying(100) |                                                      |
+-- | dob        | date                   |  not null                                            |
+-- | country    | character varying(50)  |  not null                                            |
+-- | car_id     | bigint                 |                                                      |
+-- +------------+------------------------+------------------------------------------------------+
+-- Indexes:
+--     "person_pkey" PRIMARY KEY, btree (id)
+--     "person_car_id_key" UNIQUE CONSTRAINT, btree (car_id)
+-- Foreign-key constraints:
+--     "person_car_id_fkey" FOREIGN KEY (car_id) REFERENCES car(id)
+
+SELECT * FROM person_id_seq;
+-- +------------+---------+-----------+
+-- | last_value | log_cnt | is_called |
+-- |------------+---------+-----------|
+-- | 4          | 31      | True      |
+-- +------------+---------+-----------+
+-- SELECT 1
+-- Time: 0.013s
+
+SELECT * FROM person;
+-- +----+------------+-----------+--------+----------------+------------+-----------+--------+
+-- | id | first_name | last_name | gender | email          | dob        | country   | car_id |
+-- |----+------------+-----------+--------+----------------+------------+-----------+--------|
+-- | 3  | John       | Matuschek | Male   | jon@fdbrnr.com | 1965-02-28 | England   | <null> |
+-- | 1  | Fernanda   | Beardon   | Female | nandab@is.gd   | 1953-10-28 | Comoros   | 2      |
+-- | 2  | Omar       | Colmore   | Male   | <null>         | 1921-04-03 | Finland   | 1      |
+-- | 4  | Stern      | Oldacres  | Male   | <null>         | 2023-09-22 | Indonesia | 3      |
+-- +----+------------+-----------+--------+----------------+------------+-----------+--------+
+-- SELECT 4
+-- Time: 0.010s
+
+-- Last ID is 4
+
+SELECT nextval('person_id_seq'::regclass);
+-- +---------+
+-- | nextval |
+-- |---------|
+-- | 5       |
+-- +---------+
+-- SELECT 1
+-- Time: 0.022s
+
+SELECT nextval('person_id_seq'::regclass);
+-- +---------+
+-- | nextval |
+-- |---------|
+-- | 6       |
+-- +---------+
+-- SELECT 1
+-- Time: 0.022s
+SELECT nextval('person_id_seq'::regclass);
+-- +---------+
+-- | nextval |
+-- |---------|
+-- | 7       |
+-- +---------+
+-- SELECT 1
+-- Time: 0.009s
+SELECT * FROM person_id_seq;
+-- +------------+---------+-----------+
+-- | last_value | log_cnt | is_called |
+-- |------------+---------+-----------|
+-- | 7          | 31      | True      |
+-- +------------+---------+-----------+
+-- SELECT 1
+-- Time: 0.004s
+
+-- Now last ID is 7. So the next person added here will have the ID of 8
+INSERT INTO
+    person (first_name, last_name, email, gender, dob, country)
+VALUES ('Fiann', 'Pesik', 'fpesikq@senate.gov', 'Female', '2023/03/07', 'Indonesia');
+-- INSERT 0 1
+-- Time: 0.016s
+SELECT * FROM person;
+-- +----+------------+-----------+--------+--------------------+------------+-----------+--------+
+-- | id | first_name | last_name | gender | email              | dob        | country   | car_id |
+-- |----+------------+-----------+--------+--------------------+------------+-----------+--------|
+-- | 3  | John       | Matuschek | Male   | jon@fdbrnr.com     | 1965-02-28 | England   | <null> |
+-- | 1  | Fernanda   | Beardon   | Female | nandab@is.gd       | 1953-10-28 | Comoros   | 2      |
+-- | 2  | Omar       | Colmore   | Male   | <null>             | 1921-04-03 | Finland   | 1      |
+-- | 4  | Stern      | Oldacres  | Male   | <null>             | 2023-09-22 | Indonesia | 3      |
+-- | 8  | Fiann      | Pesik     | Female | fpesikq@senate.gov | 2023-03-07 | Indonesia | <null> |
+-- +----+------------+-----------+--------+--------------------+------------+-----------+--------+
+-- SELECT 5
+-- Time: 0.013s
+```
+
+You can restart the sequence as well with the following...
+
+```sql
+SELECT nextval('person_id_seq'::regclass);
+-- +---------+
+-- | nextval |
+-- |---------|
+-- | 9       |
+-- +---------+
+-- SELECT 1
+-- Time: 0.021s
+SELECT nextval('person_id_seq'::regclass);
+-- +---------+
+-- | nextval |
+-- |---------|
+-- | 10      |
+-- +---------+
+-- SELECT 1
+-- Time: 0.010s
+
+SELECT nextval('person_id_seq'::regclass);
+-- +---------+
+-- | nextval |
+-- |---------|
+-- | 11      |
+-- +---------+
+-- SELECT 1
+-- Time: 0.009s
+SELECT * FROM person_id_seq;
+-- +------------+---------+-----------+
+-- | last_value | log_cnt | is_called |
+-- |------------+---------+-----------|
+-- | 11         | 29      | True      |
+-- +------------+---------+-----------+
+-- SELECT 1
+-- Time: 0.008s
+
+ALTER SEQUENCE person_id_seq RESTART WITH 8;
+-- ALTER SEQUENCE
+-- Time: 0.026s
+ SELECT * FROM person_id_seq;
+-- +------------+---------+-----------+
+-- | last_value | log_cnt | is_called |
+-- |------------+---------+-----------|
+-- | 8          | 0       | False     |
+-- +------------+---------+-----------+
+-- SELECT 1
+-- Time: 0.004s
+```
+
