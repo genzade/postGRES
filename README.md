@@ -1357,3 +1357,36 @@ SELECT * FROM car;
 -- SELECT 2
 ```
 
+## Inner joins
+
+```sql
+SELECT
+    first_name, make, model, price
+FROM person
+JOIN car ON person.car_id = car.id;
+-- INNER JOIN car ON person.car_id = car.id; -- same as above
+
+-- +------------+------------+----------+----------+
+-- | first_name | make       | model    | price    |
+-- |------------+------------+----------+----------|
+-- | Omar       | Land Rover | Sterling | 87665.38 |
+-- | Fernanda   | GMC        | Acadia   | 17662.69 |
+-- +------------+------------+----------+----------+
+```
+
+## Left joins
+
+```sql
+SELECT
+    first_name, make, model, price
+FROM person
+LEFT JOIN car ON person.car_id = car.id;
+-- +------------+------------+----------+----------+
+-- | first_name | make       | model    | price    |
+-- |------------+------------+----------+----------|
+-- | Omar       | Land Rover | Sterling | 87665.38 |
+-- | Fernanda   | GMC        | Acadia   | 17662.69 |
+-- | John       | <null>     | <null>   | <null>   |
+-- +------------+------------+----------+----------+
+```
+
