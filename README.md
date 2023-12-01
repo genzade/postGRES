@@ -1,6 +1,6 @@
 # PostGRES Fun
 
-My notes from [freecodecamp.org](https://www.freecodecamp.org/)'s sql course.
+My notes from [freecodecamp.org](https://www.freecodecamp.org/)'s sql course as well as my own pg cheetsheat.
 
 **Table of content:**
 
@@ -17,6 +17,54 @@ My notes from [freecodecamp.org](https://www.freecodecamp.org/)'s sql course.
 - [Drop table](#drop-table)
 - [Insert into](#insert-into)
   - [Generate mock data from file](#generate-mock-data-from-file)
+- [Selecting from table](#selecting-from-table)
+  - [Using cluases](#using-cluases)
+  - [Comparison operators](#comparison-operators)
+  - [Limit, offset and fetch](#limit-offset-and-fetch)
+  - [In](#in)
+  - [Between](#between)
+  - [Like and iLike](#like-and-ilike)
+    - [wildcard '%'](#wildcard-)
+    - [wildcard '\_'](#wildcard-_)
+    - [iLike (case insensitive)](#ilike-case-insensitive)
+  - [Group by](#group-by)
+    - [Having](#having)
+- [Adding new table](#adding-new-table)
+- [Calculations](#calculations)
+  - [Max](#max)
+  - [Min](#min)
+  - [Avg](#avg)
+  - [Sum](#sum)
+- [Arithmetic operators](#arithmetic-operators)
+  - [Round](#round)
+  - [Coalesce](#coalesce)
+  - [NULLIF](#nullif)
+- [Timastamps and dates](#timastamps-and-dates)
+  - [Adding and subtracting with dates (INTERVAL)](#adding-and-subtracting-with-dates-interval)
+  - [Extracting fields](#extracting-fields)
+- [Age function](#age-function)
+- [Primary key](#primary-key)
+  - [Alter table](#alter-table)
+  - [Adding primary key](#adding-primary-key)
+- [Unique constraints](#unique-constraints)
+- [Primary key vs Unique constraint](#primary-key-vs-unique-constraint)
+- [Check constraint](#check-constraint)
+- [Delete records](#delete-records)
+- [Update records](#update-records)
+  - [Note about updating](#note-about-updating)
+- [On conflict, do nothing](#on-conflict-do-nothing)
+- [Upsert](#upsert)
+- [Foreign keys, joins and relationships](#foreign-keys-joins-and-relationships)
+  - [Adding relationships between tables](#adding-relationships-between-tables)
+  - [Updating foreign keys columns](#updating-foreign-keys-columns)
+- [Inner joins](#inner-joins)
+- [Left joins](#left-joins)
+- [Deleting records with foreingn keys](#deleting-records-with-foreingn-keys)
+- [Exporting query results to CSV](#exporting-query-results-to-csv)
+- [Serial and sequences](#serial-and-sequences)
+- [Extensions](#extensions)
+  - [Understanding UUID data types](#understanding-uuid-data-types)
+  - [UUID as primary keys](#uuid-as-primary-keys)
 
 ## Prerequisites
 
