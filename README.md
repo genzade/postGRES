@@ -1406,3 +1406,13 @@ DELETE FROM person WHERE car_id = 2;
 DELETE FROM car WHERE id = 2;
 ```
 
+## Exporting query results to CSV
+
+```sql
+\copy (
+     SELECT *
+     FROM person
+     LEFT JOIN car ON person.car_id = car.id
+ ) TO '/path/to/file.csv' CSV HEADER; -- include headers
+```
+
